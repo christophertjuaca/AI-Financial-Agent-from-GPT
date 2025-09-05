@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Financial Services AI Chat</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Financial Services AI Chat</div>
+        <div class="controls">
+          <label><input type="radio" name="theme" value="light" checked> Light</label>
+          <label><input type="radio" name="theme" value="dark"> Dark</label>
+          <label><input type="radio" name="theme" value="system"> System</label>
+          <span class="divider"></span>
+          <button id="clearBtn" class="btn subtle">Clear chat</button>
+          <button id="newSessionBtn" class="btn primary">New session</button>
+        </div>
+      </header>
+
+      <main id="messages" class="messages"></main>
+
+      <section id="typing" class="typing hidden">
+        <div class="row">
+          <div class="avatar bot">🤖</div>
+          <div class="bubble typing-bubble">
+            <div class="dots"><span></span><span></span><span></span></div>
+            <div class="meta">AI is typing… (waiting webhook) · <span id="elapsed">00:00</span> / 15:00</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="errorBar" class="error hidden">
+        <div id="errorText"></div>
+        <button id="retryBtn" class="btn danger small">Retry</button>
+      </section>
+
+      <footer class="composer">
+        <textarea id="input" placeholder="Type your message... (Shift+Enter for new line)"></textarea>
+        <button id="sendBtn" class="btn primary">Send</button>
+      </footer>
+
+      <div class="session">Session ID: <span id="sessionId"></span></div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
