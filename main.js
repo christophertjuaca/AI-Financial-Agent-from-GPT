@@ -114,7 +114,7 @@ function setLoading(v) {
   $send.disabled = v;
   $input.disabled = v;
   if (v) {
-    $typing.classList.remove("hidden");
+    $typing.hidden = false;
     startTime = Date.now();
     timer = setInterval(() => {
       const ms = Date.now() - startTime;
@@ -123,18 +123,21 @@ function setLoading(v) {
       $elapsed.textContent = mm + ":" + ss;
     }, 1000);
   } else {
-    $typing.classList.add("hidden");
+    $typing.hidden = true;
     clearInterval(timer);
     $elapsed.textContent = "00:00";
   }
-}
+  }
 
-function setError(msg, canRetry=false) {
-  if (!msg) { $errorBar.classList.add("hidden"); return; }
-  $errorText.textContent = msg;
-  $errorBar.classList.remove("hidden");
-  $retry.style.display = canRetry ? "inline-block" : "none";
-}
+  function setError(msg, canRetry=false) {
+    if (!msg) {
+      $errorBar.hidden = true;
+      return;
+    }
+    $errorText.textContent = msg;
+    $errorBar.hidden = false;
+    $retry.style.display = canRetry ? "inline-block" : "none";
+  }
 
 // Handlers
 $send.onclick = () => {
