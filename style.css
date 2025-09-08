@@ -32,8 +32,6 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: system
 .controls { display: flex; gap: 10px; font-size: 12px; }
 .divider { width: 1px; background: var(--border); }
 
-.hidden { display: none; }
-
 .messages { background: var(--panel); padding: 16px; overflow-y: auto; }
 .row { display: flex; gap: 8px; margin-bottom: 12px; }
 .row.right { justify-content: flex-end; }
