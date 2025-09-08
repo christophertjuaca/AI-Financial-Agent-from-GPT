@@ -31,10 +31,15 @@ const $sessionId = document.getElementById("sessionId");
 
 $sessionId.textContent = sessionId;
 render();
+persist();
 
 function persist() {
-  localStorage.setItem("messages", JSON.stringify(messages));
-  localStorage.setItem("sessionId", sessionId);
+  try {
+    localStorage.setItem("messages", JSON.stringify(messages));
+    localStorage.setItem("sessionId", sessionId);
+  } catch (e) {
+    console.error("Failed to persist localStorage", e);
+  }
 }
 
 function render() {
