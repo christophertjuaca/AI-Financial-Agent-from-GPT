@@ -106,7 +106,19 @@ function normalize(t) {
   if (!t) return "";
   let out = t.trim();
   if ((out.startsWith('"') && out.endsWith('"')) || (out.startsWith("'") && out.endsWith("'"))) out = out.slice(1,-1);
-  return out.replace(/\r?\n/g, "\n");
+
+  // Convert any HTML markup to readable text
+  const tmp = document.createElement("div");
+  tmp.innerHTML = out;
+  tmp.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
+  tmp.querySelectorAll("p").forEach(p => p.insertAdjacentText("afterend", "\n"));
+  tmp.querySelectorAll("li").forEach(li => li.insertAdjacentText("beforebegin", "• "));
+  out = tmp.textContent || "";
+
+  return out
+    .replace(/\r?\n/g, "\n")      // normalise newlines
+    .replace(/\n{3,}/g, "\n\n")    // collapse excessive spacing
+    .trim();
 }
 
 function setLoading(v) {
