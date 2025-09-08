@@ -110,6 +110,8 @@ function normalize(t) {
 
 function setLoading(v) {
   loading = v;
+  $send.disabled = v;
+  $input.disabled = v;
   if (v) {
     $typing.classList.remove("hidden");
     startTime = Date.now();
@@ -134,7 +136,13 @@ function setError(msg, canRetry=false) {
 }
 
 // Handlers
-$send.onclick = () => { const t = $input.value.trim(); if (!t) return; $input.value = ""; sendMessage(t); };
+$send.onclick = () => {
+  if (loading) return;
+  const t = $input.value.trim();
+  if (!t) return;
+  $input.value = "";
+  sendMessage(t);
+};
 $input.onkeydown = e => { if (e.key==="Enter" && !e.shiftKey){ e.preventDefault(); $send.click(); } };
 $retry.onclick = () => lastPending && sendMessage(lastPending);
 $clear.onclick = () => { messages=[]; render(); setError(""); };
