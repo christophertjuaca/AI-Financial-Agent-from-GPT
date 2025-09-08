@@ -52,16 +52,15 @@ async function sendMessage(text) {
   lastPending = text;
   setLoading(true);
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     const res = await fetch(WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: text, sessionId }),
       signal: controller.signal
     });
-    clearTimeout(timeoutId);
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
     const reply = normalize(data.AIResponse);
@@ -70,9 +69,14 @@ async function sendMessage(text) {
     render();
     setError("");
   } catch (err) {
-    console.error(err);
-    setError("Error: " + (err.message || err), true);
+    if (err.name === "AbortError") {
+      setError("Request timed out. Please retry.", true);
+    } else {
+      console.error(err);
+      setError("Error: " + (err.message || err), true);
+    }
   } finally {
+    clearTimeout(timeoutId);
     setLoading(false);
   }
 }
