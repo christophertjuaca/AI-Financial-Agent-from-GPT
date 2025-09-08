@@ -22,6 +22,7 @@ const $sessionId = document.getElementById("sessionId");
 const $themeRadios = document.querySelectorAll('input[name="theme"]');
 
 $sessionId.textContent = sessionId;
+setError("");
 
 const savedTheme = localStorage.getItem("theme") || "light";
 applyTheme(savedTheme);
