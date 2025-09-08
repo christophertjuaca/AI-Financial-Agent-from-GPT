@@ -8,6 +8,15 @@ let timer = null;
 let startTime = 0;
 let sessionId = crypto.randomUUID();
 
+try {
+  const savedMessages = localStorage.getItem("messages");
+  if (savedMessages) messages = JSON.parse(savedMessages);
+  const savedSession = localStorage.getItem("sessionId");
+  if (savedSession) sessionId = savedSession;
+} catch (e) {
+  console.error("Failed to load localStorage", e);
+}
+
 const $messages = document.getElementById("messages");
 const $typing = document.getElementById("typing");
 const $elapsed = document.getElementById("elapsed");
@@ -21,6 +30,12 @@ const $newSession = document.getElementById("newSessionBtn");
 const $sessionId = document.getElementById("sessionId");
 
 $sessionId.textContent = sessionId;
+render();
+
+function persist() {
+  localStorage.setItem("messages", JSON.stringify(messages));
+  localStorage.setItem("sessionId", sessionId);
+}
 
 function render() {
   $messages.innerHTML = "";
@@ -48,6 +63,7 @@ function render() {
 async function sendMessage(text) {
   const userMsg = { role: "user", message: text, ts: new Date().toISOString() };
   messages.push(userMsg);
+  persist();
   render();
   lastPending = text;
   setLoading(true);
@@ -67,6 +83,7 @@ async function sendMessage(text) {
     const reply = normalize(data.AIResponse);
     const botMsg = { role: "bot", message: reply, ts: new Date().toISOString() };
     messages.push(botMsg);
+    persist();
     render();
     setError("");
   } catch (err) {
@@ -113,5 +130,5 @@ function setError(msg, canRetry=false) {
 $send.onclick = () => { const t = $input.value.trim(); if (!t) return; $input.value = ""; sendMessage(t); };
 $input.onkeydown = e => { if (e.key==="Enter" && !e.shiftKey){ e.preventDefault(); $send.click(); } };
 $retry.onclick = () => lastPending && sendMessage(lastPending);
-$clear.onclick = () => { messages=[]; render(); setError(""); };
-$newSession.onclick = () => { messages=[]; render(); sessionId = crypto.randomUUID(); $sessionId.textContent = sessionId; };
+$clear.onclick = () => { messages=[]; persist(); render(); setError(""); };
+$newSession.onclick = () => { messages=[]; sessionId = crypto.randomUUID(); $sessionId.textContent = sessionId; persist(); render(); };
