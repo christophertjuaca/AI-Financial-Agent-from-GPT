@@ -19,8 +19,28 @@ const $send = document.getElementById("sendBtn");
 const $clear = document.getElementById("clearBtn");
 const $newSession = document.getElementById("newSessionBtn");
 const $sessionId = document.getElementById("sessionId");
+const $themeRadios = document.querySelectorAll('input[name="theme"]');
 
 $sessionId.textContent = sessionId;
+
+const savedTheme = localStorage.getItem("theme") || "light";
+applyTheme(savedTheme);
+$themeRadios.forEach(radio => {
+  radio.checked = radio.value === savedTheme;
+  radio.addEventListener("change", () => {
+    const choice = radio.value;
+    localStorage.setItem("theme", choice);
+    applyTheme(choice);
+  });
+});
+
+function applyTheme(option) {
+  let theme = option;
+  if (option === "system") {
+    theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.documentElement.dataset.theme = theme;
+}
 
 function render() {
   $messages.innerHTML = "";
