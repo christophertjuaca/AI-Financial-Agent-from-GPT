@@ -107,12 +107,30 @@ function normalize(t) {
   let out = t.trim();
   if ((out.startsWith('"') && out.endsWith('"')) || (out.startsWith("'") && out.endsWith("'"))) out = out.slice(1,-1);
 
+  // Remove basic Markdown syntax
+  out = out
+    // decode links: [text](url) -> text
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1")
+    // bold **text** or __text__ -> text
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    // italic *text* or _text_ -> text
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/_(.*?)_/g, "$1")
+    // headings # text -> text
+    .replace(/^#{1,6}\s*/gm, "")
+    // bullet markers * or - -> bullet symbol
+    .replace(/^\s*[\*-]\s+/gm, "• ");
+
   // Convert any HTML markup to readable text
   const tmp = document.createElement("div");
   tmp.innerHTML = out;
   tmp.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
   tmp.querySelectorAll("p").forEach(p => p.insertAdjacentText("afterend", "\n"));
-  tmp.querySelectorAll("li").forEach(li => li.insertAdjacentText("beforebegin", "• "));
+  tmp.querySelectorAll("li").forEach(li => {
+    li.insertAdjacentText("beforebegin", "• ");
+    li.insertAdjacentText("afterend", "\n");
+  });
   out = tmp.textContent || "";
 
   return out
