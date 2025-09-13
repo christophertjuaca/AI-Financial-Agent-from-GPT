@@ -43,6 +43,10 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: system
 .bubble.bot { background: var(--bubble-bot); color: var(--bubble-bot-text); border-color: var(--bubble-bot-border); }
 .meta { font-size: 10px; color: var(--muted); margin-top: 4px; }
 
+.bubble table { width: 100%; border-collapse: collapse; }
+.bubble th, .bubble td { border: 1px solid var(--border); padding: 4px 8px; }
+.bubble th { background: var(--panel); font-weight: 600; }
+
 .typing { padding: 0 16px 8px; }
 .dots { display: flex; gap: 4px; }
 .dots span { width: 6px; height: 6px; background: #9ca3af; border-radius: 50%; animation: bounce 1s infinite ease-in-out; }
