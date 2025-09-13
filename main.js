@@ -51,10 +51,10 @@ function render() {
     if (m.role === "bot") {
       const av = document.createElement("div"); av.className = "avatar bot"; av.textContent = "🤖"; row.appendChild(av);
     }
-    const wrap = document.createElement("div");
-    const bubble = document.createElement("div");
-    bubble.className = "bubble " + (m.role);
-    bubble.textContent = m.message;
+      const wrap = document.createElement("div");
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + (m.role);
+      bubble.innerHTML = m.message;
     const meta = document.createElement("div");
     meta.className = "meta"; meta.textContent = new Date(m.ts).toLocaleString();
     wrap.appendChild(bubble); wrap.appendChild(meta); row.appendChild(wrap);
@@ -102,42 +102,14 @@ async function sendMessage(text) {
   }
 }
 
-function normalize(t) {
-  if (!t) return "";
-  let out = t.trim();
-  if ((out.startsWith('"') && out.endsWith('"')) || (out.startsWith("'") && out.endsWith("'"))) out = out.slice(1,-1);
-
-  // Remove basic Markdown syntax
-  out = out
-    // decode links: [text](url) -> text
-    .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1")
-    // bold **text** or __text__ -> text
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/__(.*?)__/g, "$1")
-    // italic *text* or _text_ -> text
-    .replace(/\*(.*?)\*/g, "$1")
-    .replace(/_(.*?)_/g, "$1")
-    // headings # text -> text
-    .replace(/^#{1,6}\s*/gm, "")
-    // bullet markers * or - -> bullet symbol
-    .replace(/^\s*[\*-]\s+/gm, "• ");
-
-  // Convert any HTML markup to readable text
-  const tmp = document.createElement("div");
-  tmp.innerHTML = out;
-  tmp.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
-  tmp.querySelectorAll("p").forEach(p => p.insertAdjacentText("afterend", "\n"));
-  tmp.querySelectorAll("li").forEach(li => {
-    li.insertAdjacentText("beforebegin", "• ");
-    li.insertAdjacentText("afterend", "\n");
-  });
-  out = tmp.textContent || "";
-
-  return out
-    .replace(/\r?\n/g, "\n")      // normalise newlines
-    .replace(/\n{3,}/g, "\n\n")    // collapse excessive spacing
-    .trim();
-}
+  function normalize(t) {
+    if (!t) return "";
+    let out = t.trim();
+    if ((out.startsWith('"') && out.endsWith('"')) || (out.startsWith("'") && out.endsWith("'"))) {
+      out = out.slice(1, -1);
+    }
+    return DOMPurify.sanitize(marked.parse(out));
+  }
 
 function setLoading(v) {
   loading = v;
